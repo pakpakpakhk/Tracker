@@ -1,14 +1,17 @@
-<!DOCTYPE html>
+# Create a mobile-optimized version of the 10-week tracker with improved touch targets and responsive layout.
+html_content = r"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Vice-Principal Morning Routine Tracker (10 Weeks)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Morning Routine Tracker (10 Weeks, Mobile Optimized)</title>
 <style>
   :root{
     --card-bg:#ffffff;
     --bg:#f6f7fb;
-    --text:#1f2937;
+    --text:#111827;
     --muted:#6b7280;
     --accent:#2563eb;
     --accent-2:#10b981;
@@ -16,33 +19,34 @@
     --danger:#ef4444;
   }
   *{box-sizing:border-box}
-  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.5 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Ubuntu,Helvetica,Arial}
   header{
     position:sticky;top:0;z-index:10;
-    background:linear-gradient(180deg,#fff,rgba(255,255,255,.92));
+    background:linear-gradient(180deg,#fff,rgba(255,255,255,.94));
     backdrop-filter:saturate(120%) blur(6px);
     border-bottom:1px solid var(--border);
   }
-  .wrap{max-width:1100px;margin:0 auto;padding:16px}
-  h1{font-size:clamp(20px,2.5vw,28px);margin:0 0 4px}
+  .wrap{max-width:1100px;margin:0 auto;padding:14px}
+  h1{font-size:clamp(18px,4vw,28px);margin:0 0 4px}
   .sub{color:var(--muted);font-size:14px;margin:0 0 12px}
   .controls{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;align-items:end}
   .ctrl{display:flex;flex-direction:column;gap:6px}
   label{font-weight:600;font-size:14px}
   input[type="date"],input[type="number"],select,textarea{
-    width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:#fff;color:var(--text);
+    width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:12px;background:#fff;color:var(--text);
+    min-height:44px; /* iOS tap target */
   }
   button{
-    padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:#fff;cursor:pointer;font-weight:600
+    padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:#fff;cursor:pointer;font-weight:700;min-height:44px;
   }
   .btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
   .btn-outline{background:#fff;color:var(--text)}
   .btn-danger{background:var(--danger);border-color:var(--danger);color:#fff}
-  main{padding:16px}
+  main{padding:14px}
   .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
   .week{grid-column:span 12;background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:14px}
   @media(min-width:700px){.week{grid-column:span 6}}
-  .week header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .week header{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:10px}
   .phase{display:inline-flex;align-items:center;gap:8px;font-weight:700}
   .phase .badge{padding:3px 8px;border-radius:999px;background:var(--accent);color:#fff;font-size:12px}
   .phase small{color:var(--muted);font-weight:500}
@@ -55,25 +59,40 @@
     background:linear-gradient(90deg,var(--accent),var(--accent-2));border-radius:999px
   }
   .progress-label{min-width:44px;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);font-size:12px;margin-left:8px}
-  .days{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
-  .day{border:1px solid var(--border);border-radius:12px;padding:8px;background:#fff;display:flex;flex-direction:column;gap:8px}
-  .day h4{margin:0;font-size:13px;display:flex;justify-content:space-between;align-items:center}
+  .days{display:grid;grid-template-columns:repeat(7,1fr);gap:10px}
+  .day{border:1px solid var(--border);border-radius:12px;padding:10px;background:#fff;display:flex;flex-direction:column;gap:10px}
+  .day h4{margin:0;font-size:14px;display:flex;justify-content:space-between;align-items:center}
   .pill{font-size:11px;padding:2px 6px;border-radius:999px;background:#f1f5f9;color:#334155}
-  .tasks{display:flex;flex-direction:column;gap:6px}
-  .task{display:flex;gap:8px;align-items:flex-start}
-  .task input[type=checkbox]{margin-top:2px;transform:scale(1.15)}
-  .task label{font-weight:500;font-size:13px}
-  .note{width:100%;min-height:46px;font-size:12px}
+  .tasks{display:flex;flex-direction:column;gap:8px}
+  .task{display:flex;gap:12px;align-items:center;border:1px dashed transparent;border-radius:10px;padding:6px 8px;min-height:44px}
+  .task:hover{border-color:var(--border)}
+  .task input[type=checkbox]{width:22px;height:22px}
+  .task span{font-size:14px}
+  .note{width:100%;min-height:46px;font-size:14px}
   footer{padding:20px;color:var(--muted);text-align:center}
   .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;border:1px solid var(--border);border-bottom-width:3px;border-radius:6px;padding:0 6px;background:#fff;color:#111}
   details > summary{cursor:pointer;font-weight:600;margin:8px 0}
+
+  /* Mobile layout tweaks */
+  @media (max-width: 900px){
+    .controls{grid-template-columns:repeat(3,1fr)}
+  }
+  @media (max-width: 700px){
+    .controls{grid-template-columns:repeat(2,1fr)}
+    .days{grid-template-columns:repeat(2,1fr)}
+  }
+  @media (max-width: 430px){
+    .wrap{padding:12px}
+    .days{grid-template-columns:1fr}
+    .sub{font-size:13px}
+  }
 </style>
 </head>
 <body>
 <header>
   <div class="wrap">
     <h1>Morning Routine & Progress Tracker</h1>
-    <p class="sub">10-week plan to align with your blood test. Built around your 5:30–6:00 walk-jog + quick strength.</p>
+    <p class="sub">10-week plan to align with your blood test. Optimized for iPhone. Saves progress on your device.</p>
     <div class="controls">
       <div class="ctrl">
         <label for="startDate">Start date</label>
@@ -133,16 +152,14 @@
 </main>
 
 <footer>
-  <div>Tip: Press <span class="kbd">Ctrl</span>/<span class="kbd">Cmd</span> + <span class="kbd">S</span> here to save to your browser.</div>
+  <div>Install on iPhone: open in Safari → Share → <strong>Add to Home Screen</strong>. Your progress stays on this device.</div>
 </footer>
 
 <script>
 (function(){
-  // Bump storage key so this 10-week default doesn't load older 12-week saves
-  const LS_KEY = "vp_morning_tracker_v2";
+  const LS_KEY = "vp_morning_tracker_v2_mobile";
 
   const qs = (s, el=document) => el.querySelector(s);
-  const qsa = (s, el=document) => Array.from(el.querySelectorAll(s));
 
   const startDateInput = qs('#startDate');
   const weeksInput = qs('#weeks');
@@ -194,10 +211,10 @@
     const t = document.createElement('div');
     t.textContent = msg;
     t.style.position = 'fixed';
-    t.style.bottom = '16px';
+    t.style.bottom = '22px';
     t.style.left = '50%';
     t.style.transform = 'translateX(-50%)';
-    t.style.background = 'rgba(31,41,55,.95)';
+    t.style.background = 'rgba(17,24,39,.95)';
     t.style.color = '#fff';
     t.style.padding = '10px 14px';
     t.style.borderRadius = '10px';
@@ -216,7 +233,6 @@
   const dayNames = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
 
   function defaultTasksFor(dayIndex, weekNo, template){
-    // 0=Mon ... 6=Sun
     const P = phaseForWeek(weekNo);
     const jogText = `5:30–6:00 walk-jog (${P.desc})`;
     const optStrength = "Optional 3-min strength (squats, wall push-ups, calf raises, side planks)";
@@ -255,9 +271,7 @@
           ];
       }
     }
-
-    // custom: empty starter
-    return [{text:"Add your own task (click ✎ to edit)", done:false}];
+    return [{text:"Add your own task (tap ✎ to edit)", done:false}];
   }
 
   function buildStateFromControls(){
@@ -288,12 +302,10 @@
   }
 
   function render(state){
-    // Summary
     const totalTasks = state.weeks.reduce((acc,w)=> acc + w.days.reduce((a,d)=>a+d.tasks.length,0),0);
     const doneTasks = state.weeks.reduce((acc,w)=> acc + w.days.reduce((a,d)=>a+d.tasks.filter(t=>t.done).length,0),0);
     const pct = totalTasks? Math.round(doneTasks*100/totalTasks):0;
 
-    // Compute week-10 end date
     const endDateW10 = dateForDay(state.startDate, 10, 6);
 
     summary.innerHTML = `
@@ -301,14 +313,13 @@
         <div style="display:flex;flex-direction:column;gap:2px">
           <div style="font-weight:700">Overall progress</div>
           <div style="color:var(--muted);font-size:14px">Start: <strong>${state.startDate}</strong> · Weeks: <strong>${state.totalWeeks}</strong> · Template: <strong>${labelForTemplate(state.template)}</strong></div>
-          <div style="color:var(--muted);font-size:13px">End of Week 10 falls on: <strong>${endDateW10}</strong> (useful for booking fasting labs)</div>
+          <div style="color:var(--muted);font-size:13px">End of Week 10 falls on: <strong>${endDateW10}</strong></div>
         </div>
         <div class="progress" style="--p:${pct};"></div>
         <div class="progress-label">${pct}%</div>
       </div>
     `;
 
-    // Weeks
     weeksGrid.innerHTML = "";
     state.weeks.forEach(week => {
       const phase = phaseForWeek(week.weekNo);
@@ -331,7 +342,7 @@
         dEl.innerHTML = `
           <h4>${day.title} <span class="pill">${dateForDay(state.startDate, week.weekNo, idx)}</span></h4>
           <div class="tasks"></div>
-          <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+          <div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap">
             <button class="btn-outline" data-week="${week.weekNo}" data-day="${idx}" data-action="add-task" title="Add task">＋ Task</button>
             <button class="btn-outline" data-week="${week.weekNo}" data-day="${idx}" data-action="edit-tasks" title="Edit tasks">✎ Edit</button>
             <button class="btn-outline" data-week="${week.weekNo}" data-day="${idx}" data-action="clear-day" title="Uncheck all tasks">Clear</button>
@@ -340,11 +351,11 @@
         `;
         const tContainer = dEl.querySelector('.tasks');
         day.tasks.forEach((task, tIdx) => {
-          const tEl = document.createElement('div');
+          const tEl = document.createElement('label');
           tEl.className="task";
           tEl.innerHTML = `
             <input type="checkbox" ${task.done?"checked":""} data-week="${week.weekNo}" data-day="${idx}" data-task="${tIdx}">
-            <label>${escapeHtml(task.text)}</label>
+            <span>${escapeHtml(task.text)}</span>
           `;
           tContainer.appendChild(tEl);
         });
@@ -364,7 +375,7 @@
 
   function dateForDay(startISO, weekNo, dayIndex){
     const start = new Date(startISO+"T00:00");
-    const startDay = (start.getDay()+6)%7; // make Monday=0
+    const startDay = (start.getDay()+6)%7; // Monday=0
     const offsetDays = (weekNo-1)*7 + dayIndex - startDay;
     const d = new Date(start);
     d.setDate(start.getDate()+offsetDays);
@@ -376,7 +387,6 @@
   }
 
   function attachEvents(state){
-    // checkbox toggles
     weeksGrid.addEventListener('change', (e)=>{
       const el = e.target;
       if(el.matches('input[type="checkbox"]')){
@@ -385,57 +395,45 @@
         const t = +el.dataset.task;
         state.weeks[w].days[d].tasks[t].done = el.checked;
         save(state);
-        // update week + overall progress
-        render(state);
-        attachEvents(state);
+        render(state); attachEvents(state);
       }
     });
 
-    // notes
     weeksGrid.addEventListener('input', (e)=>{
       const el = e.target;
       if(el.matches('textarea.note')){
         const w = +el.dataset.week - 1;
         const d = +el.dataset.day;
         state.weeks[w].days[d].note = el.value;
-        // don't re-render on every keystroke; just save
         localStorage.setItem(LS_KEY, JSON.stringify(state));
       }
     });
 
-    // per-day / per-week actions
     weeksGrid.addEventListener('click', (e)=>{
       const btn = e.target.closest('button');
       if(!btn) return;
       const action = btn.dataset.action;
-      if(!action) return;
 
       if(action==="clear-week"){
         const w = +btn.dataset.week - 1;
         state.weeks[w].days.forEach(day=> day.tasks.forEach(t=>t.done=false));
-        save(state);
-        render(state); attachEvents(state);
+        save(state); render(state); attachEvents(state);
       }
-
       if(action==="clear-day"){
         const w = +btn.dataset.week - 1;
         const d = +btn.dataset.day;
         state.weeks[w].days[d].tasks.forEach(t=>t.done=false);
-        save(state);
-        render(state); attachEvents(state);
+        save(state); render(state); attachEvents(state);
       }
-
       if(action==="add-task"){
         const w = +btn.dataset.week - 1;
         const d = +btn.dataset.day;
         const txt = prompt("New task text:");
         if(txt && txt.trim()){
           state.weeks[w].days[d].tasks.push({text:txt.trim(), done:false});
-          save(state);
-          render(state); attachEvents(state);
+          save(state); render(state); attachEvents(state);
         }
       }
-
       if(action==="edit-tasks"){
         const w = +btn.dataset.week - 1;
         const d = +btn.dataset.day;
@@ -444,8 +442,7 @@
         if(edited!==null){
           const arr = edited.split("\n").map(s=>s.trim()).filter(Boolean);
           state.weeks[w].days[d].tasks = arr.map(s=>({text:s, done:false}));
-          save(state);
-          render(state); attachEvents(state);
+          save(state); render(state); attachEvents(state);
         }
       }
     });
@@ -502,7 +499,6 @@
     };
   }
 
-  // Initial load
   const state = load() || buildStateFromControls();
   render(state);
   attachEvents(state);
@@ -510,3 +506,11 @@
 </script>
 </body>
 </html>
+"""
+
+# Save the mobile version
+path = "/mnt/data/morning_routine_tracker_10w_mobile.html"
+with open(path, "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+path
